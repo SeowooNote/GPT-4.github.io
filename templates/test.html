@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-4_Project</title>
+    <style>
+        /* 초기화 */
+        *{margin: 0; padding: 0;}
+        
+        /* 레이아웃 */
+        #wrap{
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2000px;
+            height:1200px;
+            background-image: url(https://img.freepik.com/free-vector/realistic-front-view-smartphone-mockup-mobile-iphone-purple-frame-with-blank-white-display-vector_90220-959.jpg);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            border-radius: 8px;
+            background-color: antiquewhite;
+        }
+        #moniter{
+            width: 630px;
+            height: 800px;
+            border-radius: 8px;
+            /* background-color: aliceblue; */
+            overflow: scroll;
+            padding: 20px;
+        }
+        #weather_folder{
+            margin-bottom: 10px;
+            
+        }
+        #weather_folder, #finance_folder{
+            margin-left: 25px;
+            width: 128px;
+        }
+        #weather_folder h2, #finance_folder h2{text-align: center;}
+
+        /* 부산날씨 데이터 크롤링 */
+        #weather{text-align: center;}
+
+        #weather h1{
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        #weather h2{
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        #weather p{
+            font-size: 25px;
+            margin-bottom: 25px;
+        }
+        #weather img{
+            margin-top: 40px;
+        }
+
+        /* 국내주식 데이터 크롤링 */
+        #kospi, #kosdaq{
+            width: 100px;
+            height: 40px;
+            font-size: 20px;
+            transition: all;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            margin-right: 15px;
+        }
+
+        #kospi:hover, #kosdaq:hover{
+            background-color: lightslategray;
+        }
+
+        #financial-data-body td{text-align: center;}
+
+    </style>
+</head>
+<body>
+    <div id="wrap">
+
+        <!-- 화면 출력 레이아웃 view -->
+        <div id="moniter">
+
+            <!-- 부산날씨 폴더 -->
+            <div id="weather_folder">
+                <img src="https://cdn-icons-png.flaticon.com/128/3767/3767084.png" alt="free-icon-folder.png">
+                <h2>부산날씨</h2>
+            </div>
+
+            <!-- 국내주식 폴더 -->
+            <div id="finance_folder">
+                <img src="https://cdn-icons-png.flaticon.com/128/3767/3767084.png" alt="free-icon-folder.png">
+                <h2>국내주식</h2>
+            </div>
+            
+
+            <!-- 부산날씨 폴더 해당 데이터 연동 -->
+            <div id="weather" style="display:none;">
+                <h1>부산날씨</h1>
+                <p>{{ now_date }}</p>
+                <h2>온도 % 날씨 정보</h2>
+                <p>{{ temperature }}C, {{ weatherStatus }}</p>
+                <h2>미세먼지 & 일출 정보</h2>
+                <p>{{ air }}</p>
+                <img src="https://imagescdn.gettyimagesbank.com/500/201904/a11350149.jpg" alt="">
+            </div>
+
+            <!-- 국내주식 폴더 해당 데이터 연동 -->
+            <div id="finance" style="display:none;">
+                <div>
+                    <h1>국내 주식시장</h1>
+                    <button id="kospi">코스피</button>
+                    <button id="kosdaq">코스닥</button>
+                    <table id="financial-data">
+                        <thead>
+                            <tr>
+                                <th>N</th>
+                                <th>종목명</th>
+                                <th>현재가</th>
+                                <th>등락율</th>
+                                <th>액면가</th>
+                                <th>시가총액</th>
+                                <th>상장주식수</th>
+                                <th>외국인비율</th>
+                                <th>거래량</th>
+                            </tr>
+                        </thead>
+                        <tbody id="financial-data-body">
+                            {% for data in financial_data %}
+                                <tr>
+                                    {% for item in data %}
+                                        <td>{{ item }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#weather_folder').click(function() {
+                // Hide the weather folder and show the weather section
+                $('#weather_folder').hide();
+                $('#finance_folder').hide();
+                $('#weather').show();
+            });
+
+            // When the user clicks on the finance folder
+            $('#finance_folder').click(function() {
+                // Hide the finance folder and show the finance section
+                $('#weather_folder').hide();
+                $('#finance_folder').hide();
+                $('#finance').show();
+            });
+
+            $('#kospi').click(function() {
+
+                $.get('/kospi', function(response) {
+                    $('#financial-data-body').html(response);
+                });
+            });
+
+            $('#kosdaq').click(function() {
+                $.get('/kosdaq', function(response) {
+                    $('#financial-data-body').html(response);
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
+
+
+
+
